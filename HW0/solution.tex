@@ -395,14 +395,48 @@
   This resembles a "lead-lag" compensator because of the extra pole in the 
   denominator (first order numerator, second order denominator).
 
-  The closed-loop transfer function is calculated similarly to the compensator 
-  transfer function but uses the $B$ and $C$ matrices from the system dynamics.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{p4-1.png}
+    \caption{System diagram with Compensator.}
+  \end{figure}
+
+  To close the loop with the compensator the following state space system is 
+  applied.
   \begin{equation}
     \begin{split}
-      \dfrac{U(s)}{Y(s)} & = -C(sI - A + BK + LC)^{-1}B\\
-      &= \dfrac{-0.1}{s^2 + 527.7s + 1.413(10^5)}
+      A_{cl} =
+      \begin{bmatrix}
+        A & BC_{comp} \\ -B_{comp}C & A_{comp}
+      \end{bmatrix} 
+      &=
+      \begin{bmatrix}
+        0 & 1 & 0 & 0 \\ 
+        0 & -0.1 & 3947.84 & 87.86 \\ 
+        -439.72 & 0 & -439.72 & 1 \\
+        -98652.08 & 0 & 102599.92 & -87.96
+      \end{bmatrix} \\
+      B_{cl} &= 
+      \begin{bmatrix}
+        0 \\ B_{comp}
+      \end{bmatrix} 
+      =
+      \begin{bmatrix}
+        0 \\ 0 \\ 439.72 \\ 98652.08
+      \end{bmatrix} \\
+      C_{cl} &=
+      \begin{bmatrix}
+        C & 0
+      \end{bmatrix}
+      =
+      \begin{bmatrix}
+        1 & 0 & 0 & 0
+      \end{bmatrix} \\
+      D_{cl} &= 0
     \end{split}
   \end{equation}
+
+  Plotting the Bode Plot for the closed-loop system.
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.55\textwidth]{p4.png}
@@ -413,8 +447,8 @@
   calculated and can be confirmed by analyzing the Bode Plot above.
   \begin{equation}
     \begin{split}
-      G_m &= 123.0 \:\si{dB} \\
-      \phi_m &= \infty \:\si{dB}
+      G_m &= \infty \:\si{dB} \\
+      \phi_m &= -132.34 \:\si{\degree}
     \end{split}
   \end{equation}
 
@@ -498,6 +532,28 @@
   equivalent compensator. Plot the simulated and equivalent compensator responses. 
   Compare the expected and actual response. \\ \\ 
   \solution
+  Closing the loop on the discrete compensator.
+  \begin{equation}
+    \begin{split}
+      A_{cl} &=
+      \begin{bmatrix}
+        1 & 0.0010 & 0.0019 & 4.3(10^{-5}) \\ 
+        0 & 0.9999 & 3.7780 & 0.0860 \\ 
+        -0.0019 & -4.3(10^{-5}) & 0.5632 & 0.0009 \\
+        -3.7780 & 0.0860 & -82.9384 & 0.9139
+      \end{bmatrix} \\
+      B_{cl} &=
+      \begin{bmatrix}
+        0 \\ 0 \\ 0.4349 \\ 79.1604
+      \end{bmatrix} \\
+      C_{cl} &=
+      \begin{bmatrix}
+        1 & 0 & 0 & 0
+      \end{bmatrix} \\
+      D_{cl} &= 0
+    \end{split}
+  \end{equation}
+
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.55\textwidth]{p6.png}
