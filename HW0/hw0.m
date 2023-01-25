@@ -238,8 +238,8 @@ ylabel('Imaginary', FontSize=16);
 
 fprintf("\n");
 
-%% PROBLEM 5
-fprintf("PROBLEM 5 \n");
+%% PROBLEM 6
+fprintf("PROBLEM 6 \n");
 
 % figure
 % step(sys_comp_CL, 0.2, 'b', LineWidth=3);
