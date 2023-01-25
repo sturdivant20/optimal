@@ -263,7 +263,7 @@
 
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\textwidth]{p2.png}
+    \includegraphics[width=0.6\textwidth]{p2.png}
     \caption{Observer Step Response.}
   \end{figure}
 
@@ -348,7 +348,7 @@
   \end{equation}
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\textwidth]{p3.png}
+    \includegraphics[width=0.6\textwidth]{p3.png}
     \caption{Combined Controller and Observer Step Response.}
   \end{figure}
 
@@ -393,7 +393,9 @@
   \end{equation}
 
   This resembles a "lead-lag" compensator because of the extra pole in the 
-  denominator (first order numerator, second order denominator).
+  denominator (first order numerator, second order denominator). The new system 
+  looks like the following when $r=0$ which in turn makes $e=-y$ and 
+  $\dfrac{U(s)}{E(s)} = -\dfrac{U(s)}{Y(s)}$.
 
   \begin{figure}[H]
     \centering
@@ -439,7 +441,7 @@
   Plotting the Bode Plot for the closed-loop system.
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{p4.png}
+    \includegraphics[width=0.6\textwidth]{p4.png}
     \caption{Closed-Loop Compensator Bode Plot.}
   \end{figure}
 
@@ -505,15 +507,16 @@
 
   These new poles can then be used in the MATLAB $place$ function to create the 
   discrete observer and controller.
+  \vspace{24pt}
   \begin{equation}
     \begin{split}
       L &= place(A_z', C_z', z_{obsv})' = 
       \begin{bmatrix}
-        439.72 \\ 98652.08
+        0.4349 \\ 79.1604
       \end{bmatrix} \\
       K &= place(A_z, B_z, z_{cont}) =
       \begin{bmatrix}
-        39478.40 & 878.65
+        37781.3243 & 859.9995
       \end{bmatrix}
     \end{split}
   \end{equation}
@@ -532,31 +535,15 @@
   equivalent compensator. Plot the simulated and equivalent compensator responses. 
   Compare the expected and actual response. \\ \\ 
   \solution
-  Closing the loop fors the discrete compensator.
+  Closing the loop for the discrete compensator using $c2d$ on the continuous 
+  compensator system.
   \begin{equation}
-    \begin{split}
-      A_{cl} &=
-      \begin{bmatrix}
-        1 & 0.0010 & 0.0019 & 4.3(10^{-5}) \\ 
-        0 & 0.9999 & 3.7780 & 0.0860 \\ 
-        -0.0019 & -4.3(10^{-5}) & 0.5632 & 0.0009 \\
-        -3.7780 & 0.0860 & -82.9384 & 0.9139
-      \end{bmatrix} \\
-      B_{cl} &=
-      \begin{bmatrix}
-        0 \\ 0 \\ 0.4349 \\ 79.1604
-      \end{bmatrix} \\
-      C_{cl} &=
-      \begin{bmatrix}
-        1 & 0 & 0 & 0
-      \end{bmatrix} \\
-      D_{cl} &= 0
-    \end{split}
+    sys_{comp_z} = c2d(sys_{comp}, 1/1000)
   \end{equation}
 
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{p6.png}
+    \includegraphics[width=0.75\textwidth]{p6.png}
     \caption{Equivalent Compensator Response.}
   \end{figure}
 

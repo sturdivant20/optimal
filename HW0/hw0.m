@@ -193,8 +193,8 @@ fprintf("Discrete controller poles = %.2f%+.2fi, " + ...
     imag(zK(2)));
 Lz = place(Az', Cz', zL)';
 Kz = place(Az, Bz, zK);
-fprintf("L = [%.2f \n     %.2f] \n", L)
-fprintf("K = [%.2f, %.2f] \n", K)
+fprintf("L = [%.4f \n     %.4f] \n", Lz)
+fprintf("K = [%.4f, %.4f] \n", Kz)
 
 % discrete compensator
 Az_comp = Az - Bz*Kz - Lz*Cz;
@@ -210,11 +210,15 @@ d = d / d(1);
 TF_comp2 = tf(n, d, 1/1000)
 
 % closed loop compensator
-Az_comp_cl = [Az, Bz*Cz_comp; -Bz*Cz_comp, Az_comp];
-Bz_comp_cl = [zeros(size(Bz)); Bz_comp];
-Cz_comp_cl = [Cz, zeros(size(Cz_comp))];
-sys_comp_CLz = ss(Az_comp_cl, Bz_comp_cl, Cz_comp_cl, 0, 1/1000);
+sys_comp_CLz = c2d(sys_comp_CL, 1/1000);
 TF_comp_CLz = tf(sys_comp_CLz)
+% Az_comp_cl = [Az         , Bz*Cz_comp; 
+%               -Bz*Cz_comp, Az_comp];
+% Bz_comp_cl = [zeros(size(Bz)); 
+%               Bz_comp];
+% Cz_comp_cl = [Cz, zeros(size(Cz_comp))];
+% sys_comp_CLz = ss(Az_comp_cl, Bz_comp_cl, Cz_comp_cl, 0);
+% TF_comp_CLz = tf(sys_comp_CLz)
 
 axes(Parent=tab4);
 title('5) Discrete Poles', FontSize=18);
@@ -237,14 +241,20 @@ fprintf("\n");
 %% PROBLEM 5
 fprintf("PROBLEM 5 \n");
 
-[Ys,t1] = step(sys_comp_CL, 0.5);
-[Yz,t2] = step(sys_comp_CLz, 0.5);
+% figure
+% step(sys_comp_CL, 0.2, 'b', LineWidth=3);
+% hold on
+% step(sys_comp_CLz, 0.2, 'r', LineWidth=3);
+% hold off
+
+[Ys,t1] = step(sys_comp_CL, 0:0.001:0.2);
+[Yz,t2] = step(sys_comp_CLz, 0:0.001:0.2);
 
 axes(Parent=tab5)
 title('Continuous vs. Discrete Compensator', FontSize=18)
 hold on;
 plot(t1, Ys, 'b', LineWidth=3);
-plot(t2, Yz, 'r', LineWidth=3);
+stairs(t2, squeeze(Yz), 'r', LineWidth=3);
 hold off;
 grid on;
 legend({'Continuous', 'Discrete'}, FontSize=16);
