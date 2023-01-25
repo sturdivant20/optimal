@@ -237,8 +237,8 @@ fprintf("\n");
 %% PROBLEM 5
 fprintf("PROBLEM 5 \n");
 
-[Ys,t1] = step(sys_comp_CL, 1);
-[Yz,t2] = step(sys_comp_CLz, 1);
+[Ys,t1] = step(sys_comp_CL, 0.5);
+[Yz,t2] = step(sys_comp_CLz, 0.5);
 
 axes(Parent=tab5)
 title('Continuous vs. Discrete Compensator', FontSize=18)
