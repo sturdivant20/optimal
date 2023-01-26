@@ -131,7 +131,7 @@ d = d / d(1);
 TF_comp = tf(n, d)
 
 % open loop dynamics
-TF_loop_dynamics = TF_comp * TF;
+% TF_loop_dynamics = TF_comp * TF;
 
 % closed loop dynamics
 A_comp_cl = [A       , B*C_comp; ...
@@ -140,7 +140,7 @@ B_comp_cl = [zeros(size(B)); ...
              B_comp];
 C_comp_cl = [C, zeros(size(C_comp))];
 sys_comp_CL = ss(A_comp_cl, B_comp_cl, C_comp_cl, 0);
-TF_comp_CL = tf(TF_loop_dynamics)
+TF_comp_CL = tf(sys_comp_CL)
 
 
 % gain and phase margins
@@ -153,15 +153,26 @@ fprintf("Closed-Loop: Gain Margin: %f, Phase Margin: %f \n", 20*log10(Gm), Pm);
 w = logspace(-2, 6, 10000);
 [mag_CL, phase_CL, w_CL] = bode(TF_comp_CL, w);
 
+% [mag_OL, phase_OL, w_OL] = bode(TF_comp, w);
+% [mag, phase, w] = bode(sys, w);
+
 axes(Parent=tab3);
 sgtitle('3) Bode Plot', FontSize=18, FontWeight='Bold')
 subplot(2,1,1);
-semilogx(w_CL, 20*log10(squeeze(mag_CL)), 'b', LineWidth=3);
+semilogx(w_CL, 20*log10(squeeze(mag_CL)), 'r', LineWidth=3);
+hold on
+% semilogx(w_OL, 20*log10(squeeze(mag_OL)), 'b', LineWidth=3);
+% semilogx(w, 20*log10(squeeze(mag)), 'g', LineWidth=3);
+% legend({'Comp CL', 'Comp', 'OL'})
 yline(0, LineWidth=2);
 ylabel('Magnitude [dB]', FontSize=16);
 grid on;
 subplot(2,1,2);
 semilogx(w_CL, squeeze(phase_CL), 'r', LineWidth=3);
+hold on
+% semilogx(w_OL, squeeze(phase_OL), 'b', LineWidth=3);
+% semilogx(w, squeeze(phase), 'g', LineWidth=3);
+% legend({'Comp CL', 'Comp', 'OL'})
 yline(0, LineWidth=2);
 xlabel('Frequency [rad/s]', FontSize=16);
 ylabel('Phase [deg]', FontSize=16);
@@ -209,22 +220,22 @@ n = flip(double(coeffs(n))) / d(1);
 d = d / d(1);
 TF_comp2 = tf(n, d, 1/1000)
 
-% closed loop compensator
-sys_comp_CLz = c2d(sys_comp_CL, 1/1000);
-TF_comp_CLz = tf(sys_comp_CLz)
-% Az_comp_cl = [Az         , Bz*Cz_comp; 
-%               -Bz*Cz_comp, Az_comp];
-% Bz_comp_cl = [zeros(size(Bz)); 
-%               Bz_comp];
-% Cz_comp_cl = [Cz, zeros(size(Cz_comp))];
-% sys_comp_CLz = ss(Az_comp_cl, Bz_comp_cl, Cz_comp_cl, 0);
-% TF_comp_CLz = tf(sys_comp_CLz)
+% closed loop dynamics
+% A_comp_cl2 = [Az         , Bz*Cz_comp; ...
+%               -Bz_comp*Cz, Az_comp];
+% B_comp_cl2 = [zeros(size(B)); ... 
+%              Bz_comp];
+% C_comp_cl2 = [Cz, zeros(size(Cz_comp))];
+% sys_comp_CL2 = ss(A_comp_cl2, B_comp_cl2, C_comp_cl2, 0);
+% TF_comp_CL2 = tf(sys_comp_CL2)
+sys_comp_CL2 = c2d(sys_comp_CL, 1/1000);
+TF_comp_CL2 = c2d(TF_comp_CL, 1/1000)
 
 axes(Parent=tab4);
 title('5) Discrete Poles', FontSize=18);
 hold on;
-plot(real(zL), imag(zL), 'bx', MarkerSize=10);
-plot(real(zK), imag(zK), 'rx', MarkerSize=10);
+plot(real(zL), imag(zL), 'bx', MarkerSize=10, LineWidth=3);
+plot(real(zK), imag(zK), 'rx', MarkerSize=10, LineWidth=3);
 % unit circle
 ang = 0:0.01:2*pi; xp = cos(ang); yp = sin(ang);
 plot(xp, yp, 'k', LineWidth=3);
@@ -248,7 +259,7 @@ fprintf("PROBLEM 6 \n");
 % hold off
 
 [Ys,t1] = step(sys_comp_CL, 0:0.001:0.2);
-[Yz,t2] = step(sys_comp_CLz, 0:0.001:0.2);
+[Yz,t2] = step(sys_comp_CL2, 0:0.001:0.2);
 
 axes(Parent=tab5)
 title('Continuous vs. Discrete Compensator', FontSize=18)

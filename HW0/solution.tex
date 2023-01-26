@@ -376,9 +376,9 @@
       \begin{bmatrix}
         439.72 \\ 98652.08
       \end{bmatrix} \\
-      C_{comp} &= -K =
+      C_{comp} &= K =
       \begin{bmatrix}
-        -39478.40 & -878.65
+        39478.40 & 878.65
       \end{bmatrix}
     \end{split}
   \end{equation}
@@ -403,8 +403,8 @@
     \caption{System diagram with Compensator.}
   \end{figure}
 
-  To close the loop with the compensator the following state space system is 
-  applied.
+  To close the loop between the compensator and the plant the following state 
+  space system is applied.
   \begin{equation}
     \begin{split}
       A_{cl} =
@@ -449,8 +449,8 @@
   calculated and can be confirmed by analyzing the Bode Plot above.
   \begin{equation}
     \begin{split}
-      G_m &= \infty \:\si{dB} \\
-      \phi_m &= -132.34 \:\si{\degree}
+      G_m &= 14.26 \:\si{dB} \\
+      \phi_m &= 94.69 \:\si{\degree}
     \end{split}
   \end{equation}
 
