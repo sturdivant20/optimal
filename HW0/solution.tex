@@ -438,7 +438,11 @@
     \end{split}
   \end{equation}
 
-  Plotting the Bode Plot for the closed-loop system.
+  This results in the following closed-loop transfer function and Bode Plot.
+  \begin{equation*}
+    H_{cl} = \dfrac{1.04(10^7)s+3.896(10^8)}
+                  {s^4+527.8s^3+1.413(10^5)s^2+1.042(10^7)s+3.896(10^8)}  
+  \end{equation*}
   \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{p4.png}
@@ -541,9 +545,24 @@
     sys_{comp_z} = c2d(sys_{comp}, 1/1000)
   \end{equation}
 
+  The new transfer function looks like:
+  \begin{equation*}
+    H_{cl} = \dfrac{0.001532z^3+0.003935z^2-0.004013z-0.001154}
+                  {z^4-3.477z^3+4.522z^2-2.665z+0.5899}
+  \end{equation*}
+
+  The continuous and discrete responses are almost identical except for the 
+  stair-stepping caused by the discretization. The only difference is that the 
+  compensated system does overshoot more than the original system.
+
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{capture.png}
+    \caption{System Response.}
+  \end{figure}
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{p6.png}
+    \includegraphics[width=0.55\textwidth]{p6.png}
     \caption{Equivalent Compensator Response.}
   \end{figure}
 
