@@ -269,10 +269,10 @@
   \begin{equation*}
     \begin{split}
       E\{x_1x_2\} &= E\{x_1\}E\{x_2\} = \bar{x}_1\bar{x}_2 \\
-      E\{(x_1-\bar{x}_1)(x_2-\bar{x}_2)\} &= E\{x_1x_2 - x_1\bar{x}_2 - x_2\bar{x}_1 + \bar{x}_1\bar{x}_2\}
+      E\{(x_1-\bar{x}_1)(x_2-\bar{x}_2)\} &= E\{x_1x_2 - x_1\bar{x}_2 - x_2\bar{x}_1 + \bar{x}_1\bar{x}_2\} = \bar{x}_1\bar{x}_2 - \bar{x}_1\bar{x}_2 - \bar{x}_1\bar{x}_2 + \bar{x}_1\bar{x}_2
     \end{split}
   \end{equation*}
-  If independent, any combinations of the random vectors together are 0, therefore:
+  This sums to 0, therefore the vectors are uncorrelated.
   \begin{equation*}
       E\{(x_1-\bar{x}_1)(x_2-\bar{x}_2)\} = 0
   \end{equation*}
@@ -283,8 +283,8 @@
   If uncorrelated, the covariance between the vectors is 0, therefore:
   \begin{equation*}
     \begin{split}
-      P_{12} &= 0 \\
-      \rho_{12} &= 0
+      \rho_{12} &= 0 \\
+      P_{12} &= 0
     \end{split}
   \end{equation*}
 
@@ -324,11 +324,28 @@
       \sigma_{V_0}^2 &= \sum_{i=1}^{11} \left(f_{V_0}(i)V_0^2(i)\right) - \mu_{V_0}^2 = 5.83
     \end{split}
   \end{equation*}
-  For the system, $V_N(k+1)=(1-r)V_N(k)+rV_0(k)$, the mean of $V_N$ can 
-  be assumed to be zero because it is made entirely from $V_0$, which 
-  is zero mean. However, an analytical solution for the variance was 
-  unable to be determined. Instead, an emperical (monte-carlo) approach 
-  was used, described in the code and figure below.
+  For the system, $V_N(k+1)=(1-r)V_N(k)+rV_0(k)$, the mean of $V_N$ is 
+  most likely zero because it is made entirely from $V_0$, which 
+  is zero mean. An analytical solution for the variance was determined 
+  below. An emperical (monte-carlo) approach was also used, described 
+  in the code and figure below.
+  \begin{equation*}
+    \begin{split}
+      \mu(k) &= 0 \\
+      \sigma^2(k) &= E\{V_N(k)V_N(k)\} \\
+      &= E\{(V_N(k))^2\} \\
+      &= E\{((1-r)V_N(k)+rV_0(k))^2\} \\
+      &= E\{V_0^2(k)r^2 - 2V_0(k)V_N(k)r^2 + 2V_0(k)V_N(k)r + V_N^2(k)r^2 - 2V_N^2(k)r + V_N^2(k)\} \\
+      &= E\{V_0^2(k)r^2 + V_N^2(k)r^2 - 2V_N^2r + V_N^2(k)\} \\
+      &= E\{V_0^2(k)r^2 + V_N^2(k)[r^2 - 2r + 1]\} \\
+      &= r^2E\{V_0^2(k)\} + (1-r)^2E\{V_N^2(k)\} \\
+      &= r^2(5.83) + (1-r)^2E\{V_N^2(k)\}
+    \end{split}
+  \end{equation*}
+  At steady state:
+  \begin{equation*}
+    \sigma^2(k) = r^2(5.83)
+  \end{equation*}
   \begin{lstlisting}
   % special dice
   prob4.dice = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5];
@@ -365,24 +382,34 @@
   that the variance is exponentially related to $r$. \\
   The autocorrelation function (covariance) for the system is as follows:
   \begin{equation*}
-    R(k) = E\{V_N(k)V_N(k+L)\}
+    R(k) = E\{V_N(k)V_N(k+1-L)\}
   \end{equation*}
-  Because $V_N$ is serially correlated, at can be assumed that the process 
-  is stationary and the autocorrelation function can be rewritten.
+  Rewriting for the autocorrelation for $k+1$:
   \begin{equation*}
     \begin{split}
-      R(k) &= E\{V_N(k)V_N(k)\} \\
-      &= E\{(V_N(k))^2\} \\
-      &= E\{((1-r)V_N(k)+rV_0(k))^2\} \\
-      &= E\{V_0^2(k)r^2 - 2V_0(k)V_N(k)r^2 + 2V_0(k)V_N(k)r + V_N^2(k)r^2 - 2V_N^2(k)r + V_N^2(k)\} \\
-      &= E\{V_0^2(k)r^2 + V_N^2(k)r^2 - 2V_N^2r + V_N^2(k)\} \\
-      &= E\{V_0^2(k)r^2 + V_N^2(k)[r^2 - 2r + 1]\}
+      R(k+1) &= E\{V_N(k+1)V_N(k+1-L)\} \\
+      &= E\{[(1-r)V_N(k)+rV_0(k)][(1-r)V_N(k-L)+rV_0(k-L)]\} \\
+      &= E\{(1-r)^2V_N(k)V_N(k-L) + r(1-r)V_N(k)V_0(k-L) + \\
+      &\:\:\:\:\:\:r(1-r)V_0(k)V_N(k-L) + r^2V_0(k)V_0(k-L)\}
     \end{split}
   \end{equation*}
+  Because the expectation of $V_0(k) = 0$ and the two variables are uncorrelated:
+  \begin{equation*}
+    \begin{split}
+      R(k+1) &= (1-r)^2E\{V_N(k)V_N(k-L)\} \\
+      &= (1-r)^2R(k)
+    \end{split}
+  \end{equation*}
+  With this, it is obvious that the relationship is of exponential decay as 
+  the number of rolls increases.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{p4-1.png}
+    \caption{Autocorrelation.}
+  \end{figure}
   Analyzing this expectation, it can be determined that $r$ must remain 
-  between 0 and 1, otherwise the system would have unbounded error 
-  (to be completely stable, $r$ must be 0). Specifically, $r<0$ is 
-  completely unstable and $r>0$ grows exponentially, quickly.
+  between 0 and 2, otherwise the system would have unbounded error. 
+  Specifically, $r<0$ or $r>2$ is grows exponentially, quickly.
 
   % PROBLEM 5
   \item A random variable $x$ has a PDF given by:

@@ -1,8 +1,8 @@
 %% Daniel Sturdivant | Optimal HW1
 clc; clear; close all;
 
-% f = figure('units','normalized','position',[0.1 0.1 0.3 0.7]);
-f = figure('units','normalized','position',[0.1 0.1 0.4 0.5]);
+f = figure('units','normalized','position',[0.1 0.1 0.3 0.7]);
+% f = figure('units','normalized','position',[0.1 0.1 0.4 0.5]);
 tabs = uitabgroup(f);
 tab(1) = uitab(Title='1)');
 tab(2) = uitab(Title="2)");
@@ -61,7 +61,7 @@ ylabel(prob1.ax, "Probability (%)");
 prob1.ax.YAxis.TickLabelFormat = "%g%%";
 prob1.ax.FontSize = 16;
 
-exportgraphics(tab(1), './media/p1.png');
+% exportgraphics(tab(1), './media/p1.png');
 
 %% Problem 2
 fprintf("\n<strong>PROBLEM 2</strong>\n");
@@ -133,6 +133,23 @@ for r = linspace(0,1.9,100)
     i = i + 1;
 end
 
+R = zeros(100,1);
+R(1) = 1;
+r = 0.1;
+for i = 1:100
+    R(i+1) = (1-r)^2 * R(i);
+end
+
+prob4.ax1 = axes(Parent=tab(3));
+plot(prob4.ax1, 0:100, R, LineWidth=2.5);
+grid(prob4.ax1, "on");
+title(prob4.ax1, "\textbf{Autocorrelation}", Interpreter="latex");
+xlabel(prob4.ax1, "R(k)");
+ylabel(prob4.ax1, "Number of Dice Rolls");
+prob4.ax1.FontSize = 16;
+
+exportgraphics(tab(3), './media/p4-1.png');
+
 prob4.ax = axes(Parent=tab(4));
 hold(prob4.ax, "on");
 plot(prob4.ax, linspace(0,1.9,100), prob4.VN_var, '-', LineWidth=2.5, DisplayName='Variance');
@@ -144,7 +161,7 @@ xlabel(prob4.ax, "r");
 ylabel(prob4.ax, "Mean/Variance");
 prob4.ax.FontSize = 16;
 
-exportgraphics(tab(4), './media/p4.png');
+% exportgraphics(tab(4), './media/p4.png');
 
 
 %% Problem 5
@@ -195,7 +212,7 @@ xlabel(prob6.ax, "x");
 ylabel(prob6.ax, "y");
 prob6.ax.FontSize = 16;
 
-exportgraphics(tab(6), './media/p6.png');
+% exportgraphics(tab(6), './media/p6.png');
 
 % part d (linear interpolation from error ellipse document)
 prob6.p1 = 0 + (0.25-0)*(39.34-0)/(1-0);
@@ -228,7 +245,7 @@ xlim(prob7.ax, [-8 8]);
 prob7.ax.YAxis.TickLabelFormat = "%g%%";
 prob7.ax.FontSize = 16;
 
-exportgraphics(tab(7), './media/p7.png');
+% exportgraphics(tab(7), './media/p7.png');
 
 
 
