@@ -1,0 +1,305 @@
+\documentclass[11pt]{article}
+
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{lastpage}
+\usepackage{titling}
+\usepackage{sectsty}
+\usepackage{setspace}
+\usepackage{changepage}
+\usepackage[shortlabels]{enumitem}
+\usepackage{subcaption}
+\usepackage{helvet}
+\usepackage{hyperref}
+
+\usepackage{tabularx}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
+\usepackage{siunitx}
+\usepackage{nicefrac}
+\usepackage{amsmath}
+\usepackage{gensymb}
+\usepackage{amssymb}
+\usepackage{float}
+\setcounter{MaxMatrixCols}{11}
+\usepackage{indentfirst}
+
+\usepackage{listings}
+\usepackage{matlab-prettifier}
+% \usepackage{color}
+% \definecolor{dkgreen}{rgb}{0,0.6,0}
+% \definecolor{gray}{rgb}{0.5,0.5,0.5}
+% \definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset
+{
+  frame=tb,
+  style=Matlab-editor,
+  % language=MATLAB, %Matlab-editor,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  % numberstyle=\tiny\color{gray},
+  % keywordstyle=\color{blue},
+  % commentstyle=\color{dkgreen},
+  % stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\geometry
+{
+  letterpaper, 
+  total={175.9mm,229.4mm}, 
+  top=25mm, 
+  left=20mm, 
+  headheight=15pt,
+  voffset=12pt,
+  footskip=15pt
+}
+\author{Daniel Sturdivant}
+\title{Homework 3}
+\date{April 2023}
+\graphicspath{ {./media/} }
+
+\pagestyle{fancy}
+\fancyhead[R]{April 10, 2023}
+\fancyhead[L]{Sturdivant, Daniel}
+\fancyhead[C]{MECH 7710 Optimal}
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+
+\makeatletter
+\def\@maketitle
+{
+  \null
+  \begin{center}
+    {\huge \@title \\}
+  \end{center}
+  \vskip 5mm
+}
+\makeatother
+
+\sectionfont{\fontsize{16}{16}}
+\subsectionfont{\fontsize{13}{13}\normalfont}
+\renewcommand{\thesubsection}{\arabic{section}-\arabic{subsection}}
+\renewcommand{\familydefault}{\sfdefault}
+\newcommand{\solution}{\textbf{Solution: \\}}
+
+
+%% ========================================================================== %%
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+\setstretch{1.25}
+% \setlength{\parskip}{0em}
+% \setlength{\abovedisplayskip}{-8pt}
+% \setlength{\belowdisplayskip}{12pt}
+\setlength{\parindent}{0pt}
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+  \itemsep 24pt
+  % PROBLEM 1
+  \item Kalman Filter at its best – simulation (actually the Kalman filter is 
+  also quite reliable when we have an excellent model and low noise sensors). 
+  Suppose we have a $2^{nd}$ order system that we are regulating about zero 
+  (position and velocity) by wrapping an "optimal" control loop around the 
+  system. The new dynamics of the continuous time system are given by the 
+  closed-loop $A$ matrix:
+  \begin{equation*}
+    A_{cl} = 
+    \begin{bmatrix}
+      0 & 1 \\ -1 & -1.4
+    \end{bmatrix}
+  \end{equation*}
+  Suppose our measurement is simply position ($C=\begin{bmatrix} 1 & 0 
+  \end{bmatrix}$). There is a white noise process disturbance (force, $B_w = 
+  \begin{bmatrix} 0 & 1 \end{bmatrix}^T$) acting on the controlled system.
+  \begin{enumerate}[(a)]
+    \itemsep -2pt 
+    \item Simulate the controlled system with the disturbance force 
+    ($1\sigma=2$) and a sampled sensor noise ($1\sigma=1$) for 100 seconds at a 
+    10 Hz sample rate.
+    \item What is $Q$, $Q_d$ and $R_d$?
+    \item Calculate the steady state Kalman gain for the system. This can be 
+    done in one of many ways: iterate the kalman filter until it converges, 
+    dlqe.m, dare.m, kalman.m, dlqr.m (+ predictor to current estimator trick), 
+    etc. What is the steady state covariance of the estimates after the time 
+    update, $P^{(-)}$, as well as after the measurement update, $P^{(+)}$. 
+    Where are the poles of the estimator?
+    \item Now use the steady state kalman filter to generate an estimate 
+    ($\hat{x}$ and $\hat{\dot{x}}$) of the 2 states over time. Calculate the 
+    norm of the standard deviation of the errors for each state.
+    \begin{equation*}
+      N = \sqrt{( std(\dot{x} - \hat{\dot{x}}) )^2 + ( std(x - \hat{x}) )^2}
+    \end{equation*}
+    \item Change the ratio of the $Q_d$ and $R_d$ weights in the Kalman filter 
+    design (repeat \emph{part d} with the new Kalman gain but \textbf{DO NOT} 
+    regenerate a new $x$ and $\dot{x}$) and determine the effect on the 
+    estimation errors. For what ratio of $Q_d$ to $R_d$ are the errors 
+    minimized? Note: Often in practice we do not know the actual $Q_d$ and 
+    $R_d$, so these tend to be "tuning" parameters we can use to tune our 
+    filter. However, according to Kalman the estimation errors are only 
+    minimized if we use the $Q_d$ and $R_d$ of the physical system.
+  \end{enumerate}
+  \solution
+
+  % PROBLEM 2
+  \item Download the data \emph{hw3\_2} from the website. The data is in the 
+  form $\begin{bmatrix} t & y \end{bmatrix}$. Suppose we want to design an 
+  estimator to estimate the bias in the measurement $y$. We believe that the 
+  bias ($x$) is constant, so we use the model given by:
+  \begin{equation*}
+    \begin{split}
+      \dot{x} &= 0 \\
+      y_k &= x_k + \nu_k \\
+      \nu_k &\sim N(0,1)
+    \end{split}
+  \end{equation*}
+  \begin{enumerate}[(a)]
+    \itemsep -2pt 
+    \item Run the Kalman filter estimator with $Q_d = 0$. What happens at 
+    $t > 100$ seconds? Why? Calculate the steady state Kalman gain $L_ss$. 
+    Plot $L(k)$. This is known as the filter "going to sleep" (becomes a least 
+    squares estimator).
+    \item To offset this problem we will "tune" $Q_d$ to track the bias. What is 
+    the effect of changing $Q_d$ on the ability to track the step change in the 
+    bias? Try values of $Q_d$ from $0.0001$ to $0.01$ and plot $L(k)$ as well 
+    as the estimate of the bias ($\hat{x}$). What is the tradeoff?
+    \item Now filter the measurement using the first order low-pass filter: \\
+    (Command: $yf = filter(numd, dend, y, y0)$)
+    \begin{equation*}
+      H(z) = \dfrac{\sqrt{Q_d}}{z - (1-\sqrt{Q_d})}
+    \end{equation*}
+    \item How does this compare to the Kalman filter solution. Why are these two 
+    filters the same for this problem?
+  \end{enumerate}
+  \solution
+
+  % PROBLEM 3
+  \item Design a "Navigation" type Kalman filter to estimate the states [East, 
+  North, Radar\_Bias, Psi, Gyro\_Bias]. Note: this is a non-linear problem that 
+  requires an Extended Kalman Filter (EKF) to do correctly. However, we can solve 
+  the problem in one of two ways: 
+  \begin{enumerate}[(i)]
+    \itemsep -2pt
+    \item linearize the equations about the nominal operating point and produce 
+    a constant A matrix for that operating point
+    \item simply update the A matrix at every time step with our measurements or 
+    estimates
+  \end{enumerate}
+  Download the data \emph{hw3\_3} from the website and run the filter sampled at 
+  5 Hz.
+  \begin{enumerate}[(a)]
+    \itemsep -2pt
+    \item How did you choose the covariance values for $Q_d$ (especially for the 
+    radar and gyro biases).
+    \item How does the bias estimation compare to a Least Squares Solution. How 
+    does the bias estimate compare to the Recursive Least Squares solution if 
+    you make the covariance ($Q_d$) of the bias estimates equal to zero.
+    \item Integrate the last 40 seconds of data to see how well you have 
+    estimated the biases. This can simply be done by “turning off” the 
+    measurements in the observation matrix! Why do the bias estimates remain 
+    constant during the 40 second "outage?"
+  \end{enumerate}
+  \solution
+
+  % PROBLEM 4
+  \item Estimator for Vehicle Dynamics. The yaw dynamics of a car (for a 
+  stability control system) can be described by the following model (at 
+  $25 m/s$):
+  \begin{equation*}
+    \begin{split}
+      \dot{x} &= 
+      \begin{bmatrix}
+        -2.62 & 12 \\ -0.96 & -2
+      \end{bmatrix}
+      \begin{bmatrix}
+        \dot{\psi} \\ \beta 
+      \end{bmatrix}
+      + 
+      \begin{bmatrix}
+        14 \\ 1
+      \end{bmatrix} 
+      \delta \\
+      y_k &= 
+      \begin{bmatrix}
+        1 & 0
+      \end{bmatrix}
+      x_k + \nu_k
+    \end{split}
+  \end{equation*}
+  Where:
+  \begin{equation*}
+    \begin{split}
+      \dot{\psi} &= \text{Vehicle Yaw Rate} \\
+      \beta &= \text{Vehicle Sideslip Angle} \\
+      \delta &= \text{Steer Angle} \\
+      \nu_k &= \text{Sample Sensor Noise}
+    \end{split}
+  \end{equation*}
+  \begin{enumerate}
+    \itemsep -2pt 
+    \item Assuming we can only measure the yaw rate ($\nu_k \sim N 
+    [0,(0.1)^2]$), design a Kalman filter to do full state estimation (select a 
+    reasonable $Q_d$). Provide a unit step steer input and estimate both states. 
+    On one page plot the actual states and estimated states (use 
+    $subplot(2,2,n)$ for each of the two states). Where are the steady state
+    poles of the estimator?
+    \item Now, somebody has loaded the trunk of the vehicle with bricks, 
+    changing the CG of the vehicle so now the actual model (at 25 m/s) is:
+    \begin{equation*}
+      \begin{split}
+        \dot{x} &= 
+        \begin{bmatrix}
+          -2.42 & 4 \\ -0.99 & -2
+        \end{bmatrix}
+        \begin{bmatrix}
+          \dot{\psi} \\ \beta
+        \end{bmatrix} 
+        +
+        \begin{bmatrix}
+          15 \\ 1
+        \end{bmatrix}
+        \delta \\
+        y_k &= 
+        \begin{bmatrix}
+          1 & 0
+        \end{bmatrix}
+        x_k + \nu_k
+      \end{split}
+    \end{equation*}
+    NOTE: We do not know that somebody has loaded the trunk and that the C.G.
+    has changed, therefore we must use the model for \emph{part a} in our Kalman 
+    Filter. Redo \emph{part a}. Can you estimate the slip angle correctly? Try 
+    various $Q_d$.
+    \item Now lets say we have a noisy measurement of the slip angle ($\eta_k 
+    \sim N[0,(0.5)^2]$):
+    \begin{equation*}
+      y_k = 
+      \begin{bmatrix}
+        1 & 0 \\ 0 & 1
+      \end{bmatrix}
+      x_k + 
+      \begin{bmatrix}
+        \nu_k \\ \eta_k
+      \end{bmatrix}
+    \end{equation*}
+    Assuming the sensor noises are uncorrelated, what is $R$?
+    \item Redo \emph{part a}. What is the effect of changing the element of 
+    $Q_d$ associated with the slip angle estimate. What must $Q_d$ equal to 
+    ensure an unbiased estimate of the states. How much filtering does that 
+    provide?
+  \end{enumerate}
+  \solution 
+
+\end{enumerate}
+
+\end{document}
