@@ -129,7 +129,7 @@ axes(Parent=tl);
 hold on;
 plot(t,y, 'b.', LineWidth=5);
 plot(t,x, LineWidth=3);
-title("\bf{A) Simulated Measurements and KF Response}")
+title("\bf{B) Simulated Measurements and KF Response}")
 legend(["Measurement (y)", "Q=0.01", "Q=0.001", "Q=0.001", "Q=0.0001"], Location="southoutside", Orientation="horizontal");
 grid on;
 

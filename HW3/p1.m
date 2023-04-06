@@ -96,7 +96,8 @@ S1 = [-A         , Bw*Qc*Bw'; ...
 S2 = eye(4) + S1*dt;
 % S2 = expm(S1*dt);
 Ad = S2(3:4,3:4)';
-Qd = Ad * S1(1:2,3:4);
+Qd = Ad * S2(1:2,3:4);
+Qd(1:3) = 0;
 Rd = 1;
 
 fprintf("Ad = [%.3f %.3f; %.3f %.3f] \n", Ad)
@@ -124,7 +125,7 @@ for k = 1:M
     if k == 1
         % initialize
         xm(:,k) = [0; 0];
-        Pm(:,:,k) = Qd;
+        Pm(:,:,k) = eye(2);
 
     else
         % time update (propogate)
@@ -141,7 +142,7 @@ for k = 1:M
 end
 
 Pp_ss = Pp(:,:,end);
-Pm_ss = Pp(:,:,end);
+Pm_ss = Pm(:,:,end);
 L_ss = L(:,end);
 
 Ad_cl = Ad - L_ss*C;
@@ -164,7 +165,7 @@ hold on
 grid on
 plot(t2, L(1,1:m), 'r', LineWidth=2)
 plot(t2, L(2,1:m), 'b', LineWidth=2)
-legend(sprintf("$L_1$ = %.3f",Lss(1)), sprintf("$L_2$ = %0.2f",Lss(2)), Location='eastoutside')
+legend(sprintf("$L_1$ = %.3f",L_ss(1)), sprintf("$L_2$ = %0.3f",L_ss(2)), Location='eastoutside')
 title("\bf{C) Kalman Gain Steady State}")
 xlabel("Time [s]")
 
@@ -239,7 +240,7 @@ for i = 1:length(ratio)
         if k == 1
             % initialize
             xm(:,k) = [0; 0];
-            Pm(:,:,k) = Q;
+            Pm(:,:,k) = eye(2);
     
         else
             % time update (propogate)
@@ -281,9 +282,9 @@ set(findall(gcf,'-property','Interpreter'),'Interpreter','latex')
 
 %%
 
-% exportgraphics(tab(1), "./media/p1_a.png");
-% exportgraphics(tab(2), "./media/p1_c.png");
-% exportgraphics(tab(3), "./media/p1_c2.png");
-% exportgraphics(tab(4), "./media/p1_e.png");
+exportgraphics(tab(1), "./media/p1_a.png");
+exportgraphics(tab(2), "./media/p1_c.png");
+exportgraphics(tab(3), "./media/p1_c2.png");
+exportgraphics(tab(4), "./media/p1_e.png");
 
 

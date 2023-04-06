@@ -18,52 +18,57 @@ t = linspace(0,5,M);
 %% PART A
 fprintf("\n<strong>(a)</strong>\n");
 
-% Noise (guessing process noise)
-R = 0.1^2;
-Q = 0.5;
-
 % continuous state
 %  -> x_dot = Ax + Bu
 A = [-2.62, 12; ...
      -0.96, -2];
 B = [14; ...
       1];
+C = [1, 0];
+
+% Noise (guessing process noise)
+R = 0.1^2;
+Q = 0.05;
+
+x = zeros(2,M);
+y = zeros(1,M);
+for k = 1:M
+    if k == 1
+        x(:,k) = [0;0]; % u=1
+        y(k) = R*randn;
+    else
+        x_dot = A * x(:,k-1) + B * 1;
+        x(:,k) = x(:,k-1) + x_dot*dt;
+        y(k) = C * x(:,k) + R*randn;
+    end
+end
 
 % bryson's rule
 S1 = [        -A, B*Q*B'; ...
       zeros(2,2),     A'];
 S2 = eye(4) + S1*dt;
+% S2 = expm(S1);
 Ad = S2(3:4,3:4)';
 Bd = B*dt;
-% Qd = Ad * S1(1:2,3:4);
-Qd = [0.625, 0.05; -0.2, 0.125];
+% Qd = Ad * S2(1:2,3:4);
+Qd = [2, -1; -1, 0.5];
 
 % Discrete measurement
 %  -> y(k) = C*x(k) + v
 C = [1, 0];
 
 % simulation
-x = zeros(2,M);
-y = zeros(1,M);
 x_hat = zeros(2,M);
 P = zeros(2,2,M);
 L = zeros(2,M);
 
 for k = 1:M
     if k == 1
-        % initialize system dynamics
-        x(:,k) = [0;0]; % u=1
-        y(k) = R*randn;
-
         % initialize kalman filter
         x_hat(:,k) = [0;0];
-        P(:,:,k) = eye(2);
+        P(:,:,k) = eye(2)*100;
 
     else
-        % system dynamics
-        x(:,k) = Ad * x(:,k-1) + Bd * 1; % u=1
-        y(k) = C * x(:,k) + R*randn;
-
         % time update (propagate)
         x_hat(:,k) = Ad * x_hat(:,k-1); % only measure yaw rate
         P(:,:,k) = Ad * P(:,:,k-1) * Ad' + Qd;
@@ -116,38 +121,42 @@ B2 = [18; ...
 
 % Noise (guessing process noise)
 R = 0.1^2;
-Q = 0.5;
 
-% brysons rule
-S1 = [       -A2, B2*Q*B2'; ...
-      zeros(2,2),      A2'];
-S2 = eye(4) + S1*dt;
-Ad2 = S2(3:4,3:4)';
-Bd2 = B2*dt;
-% Qd2 = Ad2 * S1(1:2,3:4);
-Qd2 = [0.625, 0.1; -0.275, 0.125];
-
-% simulation
 x = zeros(2,M);
 y = zeros(1,M);
+for k = 1:M
+    if k == 1
+        x(:,k) = [0;0]; % u=1
+        y(k) = R*randn;
+    else
+        x_dot = A2 * x(:,k-1) + B2 * 1;
+        x(:,k) = x(:,k-1) + x_dot*dt;
+        y(k) = C * x(:,k) + R*randn;
+    end
+end
+
+% brysons rule
+% S1 = [       -A2, B2*Q*B2'; ...
+%       zeros(2,2),      A2'];
+% S2 = eye(4) + S1*dt;
+% Ad2 = S2(3:4,3:4)';
+% Bd2 = B2*dt;
+% Qd2 = Ad2 * S1(1:2,3:4);
+Qd2 = [3, -1.2; -1.2, 0.5];
+
+% simulation
 x_hat = zeros(2,M);
 P = zeros(2,2,M);
 L = zeros(2,M);
 
 for k = 1:M
     if k == 1
-        % initialize system dynamics
-        x(:,k) = [0;0]; % u=1
-        y(k) = R*randn;
 
         % initialize kalman filter
         x_hat(:,k) = [0;0];
         P(:,:,k) = eye(2);
 
     else
-        % system dynamics
-        x(:,k) = Ad2 * x(:,k-1) + Bd2 * 1; % u=1
-        y(k) = C * x(:,k) + R*randn;
 
         % time update (propagate) -> same as PART A
         x_hat(:,k) = Ad * x_hat(:,k-1); % only measure yaw rate
@@ -212,8 +221,8 @@ S2 = expm(S1*dt);
 Ad3 = S2(3:4,3:4)';
 Bd3 = B*dt;
 % Qd3 = Ad3 * S1(1:2,3:4);
-% Qd3 = [0.005, 0.01; 0.01, 0.125];
-Qd3 = [0.625, 0.01; -0.01, 0.125];
+Qd3 = [0.2, -0.01; -0.01, 0.02];
+% Qd3 = [3, -1.2; -1.2, 0.5];
 
 % simulation
 x = zeros(2,M);
@@ -280,7 +289,7 @@ set(findall(gcf,'-property','Interpreter'),'Interpreter','latex')
 
 %%
 
-exportgraphics(tab(1), "./media/p4_a.png");
-exportgraphics(tab(2), "./media/p4_b.png");
-exportgraphics(tab(3), "./media/p4_d.png");
+% exportgraphics(tab(1), "./media/p4_a.png");
+% exportgraphics(tab(2), "./media/p4_b.png");
+% exportgraphics(tab(3), "./media/p4_d.png");
 
