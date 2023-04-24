@@ -192,16 +192,28 @@ xlabel("Time [s]")
 set(findall(gcf,'-property','FontSize'),'FontSize',16)
 set(findall(gcf,'-property','Interpreter'),'Interpreter','latex')
 
-ax = axes(Parent=tab(3));
+tl = tiledlayout(2,1, Parent=tab(3), TileSpacing="tight");
+ax = axes(Parent=tl);
 hold on;
 grid on;
 plot(t, y, '.b', LineWidth=4)
 plot(t, xp(1,:), 'g', LineWidth=2)
 plot(t, x(1,:), 'r', LineWidth=3)
-legend("Measurement (y)", "KF Estimate ($\hat{x}^+_1$)", "State (x)")
 title("\bf{C) Position Measurements vs Estimates}")
-xlabel("Time [s]")
 ylabel("Position")
+
+lg = legend("Measurement (y)", "KF Estimate ($\hat{x}^+$)", "State ($x$)", Orientation="horizontal");
+lg.Layout.Tile = "north";
+
+nexttile;
+hold on;
+grid on;
+plot(t, xp(2,:), 'g', LineWidth=2)
+plot(t, x(2,:), 'r', LineWidth=3)
+title("\bf{C) Velocity Estimates}")
+ylabel("Position")
+
+xlabel("Time [s]")
 set(findall(gcf,'-property','FontSize'),'FontSize',16)
 set(findall(gcf,'-property','Interpreter'),'Interpreter','latex')
 
@@ -282,9 +294,9 @@ set(findall(gcf,'-property','Interpreter'),'Interpreter','latex')
 
 %%
 
-exportgraphics(tab(1), "./media/p1_a.png");
-exportgraphics(tab(2), "./media/p1_c.png");
-exportgraphics(tab(3), "./media/p1_c2.png");
-exportgraphics(tab(4), "./media/p1_e.png");
+% exportgraphics(tab(1), "./media/p1_a.png");
+% exportgraphics(tab(2), "./media/p1_c.png");
+% exportgraphics(tab(3), "./media/p1_c2.png");
+% exportgraphics(tab(4), "./media/p1_e.png");
 
 
